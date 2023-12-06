@@ -1,4 +1,5 @@
-import { Counter } from "@/components/counters/server";
+import { Counter } from "@/components/counters/session-incr";
+import { LinkTbd } from "@/components/link-tbd/client";
 import { SessionForm } from "@/components/session/client";
 import { Aaron, HusbandFather } from "@/components/tiles/image-tiles";
 import { Suspense } from "react";
@@ -24,8 +25,8 @@ export default async function Home() {
             fallback={<code style={{ visibility: "hidden" }}>...</code>}
           >
             <div className="flex flex-row gap-2">
-              <span>Visit count:</span>
-              <Counter uri="home" />
+              <span>View counter</span>
+              <Counter uri="/" />
             </div>
           </Suspense>
         </div>
@@ -33,9 +34,9 @@ export default async function Home() {
       <div className="border h-12 flex items-center pl-4 text-foreground/50 tracking-tighter">
         <p>About Me...</p>
       </div>
-      <div className="w-full h-[300px] grid lg:grid-cols-3 border place-items-center">
+      <div className="w-full h-[300px] grid lg:grid-cols-3 border place-items-center gap-0">
         <Aaron />
-        <p className="border w-full h-full grid place-items-center text-center tracking-tighter text-lg">
+        <p className="border-l border-r w-full h-full grid place-items-center text-center tracking-tighter text-lg">
           <span>
             Full-stack engineer <br />
             at{" "}
@@ -45,6 +46,39 @@ export default async function Home() {
           </span>
         </p>
         <HusbandFather />
+      </div>
+      <div className="border h-12 flex items-center pl-4 text-foreground/50 tracking-tighter">
+        <p>Hobbies (links TBD)</p>
+      </div>
+      <div className="lg:flex border">
+        <div className="flex-1 lg:h-[300px] grid content-center justify-center">
+          <p className="text-3xl py-4 tracking-tight">8-ball Pool</p>
+          <ol className="py-1">
+            <li>
+              <LinkTbd>How pool works</LinkTbd>
+            </li>
+            <li>
+              <LinkTbd>Pool physics</LinkTbd>
+            </li>
+            <li>
+              <LinkTbd>Pool strategy</LinkTbd>
+            </li>
+          </ol>
+        </div>
+        <div className="flex-1 lg:h-[300px] lg:border-l grid content-center justify-center">
+          <p className="text-3xl py-4 tracking-tight">Kendo</p>
+          <ol className="py-1">
+            <li>
+              <LinkTbd>How kendo works</LinkTbd>
+            </li>
+            <li>
+              <LinkTbd>Kendo physics</LinkTbd>
+            </li>
+            <li>
+              <LinkTbd>Thoughts on kendo</LinkTbd>
+            </li>
+          </ol>
+        </div>
       </div>
     </main>
   );

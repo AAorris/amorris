@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { GeistSans } from "geist/font/sans";
 import { GeistMono } from "geist/font/mono";
+import { Analytics } from "@vercel/analytics/react";
 import { SessionForm, SessionProvider } from "@/components/session/client";
 import { getSession } from "@/components/session/common";
 
@@ -50,6 +51,7 @@ export default function RootLayout({
               <GithubLogo />
             </div>
           </footer>
+          <Analytics />
         </body>
       </html>
     </SessionProvider>
