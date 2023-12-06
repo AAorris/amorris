@@ -1,78 +1,107 @@
 "use client";
-import { useState } from "react";
+import { CSSProperties, useState } from "react";
+import { useHover } from "react-aria";
 import forest from "../../public/img/1.jpg";
 import aaron from "../../public/img/2.jpg";
 import Image from "next/image";
 
-export function Aaron() {
-  const [hover, setHover] = useState(false);
+export function RevealTile(props: {
+  children: JSX.Element;
+  Reavealed: (props: { style: CSSProperties }) => JSX.Element;
+  blurDataURL?: string;
+}) {
+  const [click, setClick] = useState(false);
+  const { hoverProps, isHovered } = useHover({});
   const inner = (
-    <p
-      className="border w-full h-full grid place-items-center text-5xl tracking-tighter text-center"
-      onMouseEnter={() => setHover(true)}
-    >
-      Aaron Morris
-    </p>
-  );
-  if (!hover) return inner;
-  return (
     <div
-      onMouseLeave={() => setHover(false)}
-      className="relative w-full h-full text-gray-500"
+      className="absolute inset-0 w-full h-full grid place-items-center text-5xl font-bold tracking-tighter text-center"
+      style={{
+        transition: "opacity 0.2s ease-out",
+        opacity: isHovered ? 0 : 1,
+      }}
     >
-      <div className="absolute inset-0 w-full h-full">
-        <Image
-          src={aaron.src}
-          alt="Aaron Morris"
-          layout="fill"
-          placeholder="blur"
-          sizes="300px 600px"
-          blurDataURL={aaron.blurDataURL}
-          quality={50}
-          style={{
-            objectFit: "cover",
-            objectPosition: "50% 15%",
-          }}
-        />
-      </div>
-      {inner}
+      {props.children}
     </div>
+  );
+  return (
+    <button
+      onClick={() => setClick(!click)}
+      className="relative w-full h-full overflow-clip"
+      {...hoverProps}
+    >
+      <div
+        className="relative w-full h-full"
+        style={{
+          overflow: "clip",
+          opacity: isHovered && !click ? 0.8 : 0,
+          transition: "opacity 0.5s ease-out",
+        }}
+      >
+        <div
+          className="absolute inset-0 w-full h-full"
+          style={{
+            backgroundImage: `url(${props.blurDataURL})`,
+            backgroundSize: "cover",
+            filter: "blur(10px)",
+            overflow: "clip",
+          }}
+        >
+          {" "}
+        </div>
+      </div>
+      <div className="absolute inset-0 w-full h-full">
+        {isHovered || click ? (
+          <props.Reavealed
+            style={{
+              objectFit: "cover",
+              objectPosition: "50% 15%",
+              opacity: click ? 1 : 0,
+            }}
+          />
+        ) : null}
+      </div>
+      {click ? null : inner}
+    </button>
   );
 }
 
-export function HusbandFather() {
-  const [hover, setHover] = useState(false);
-  const inner = (
-    <p
-      className="border w-full h-full grid place-items-center text-4xl tracking-tighter text-center"
-      onMouseEnter={() => setHover(true)}
-      onMouseLeave={() => setHover(false)}
-    >
-      Husband, Father
-    </p>
-  );
-  if (!hover) return inner;
+const AaronImage = (props: { style: CSSProperties }) => (
+  <Image
+    src={aaron.src}
+    alt="Aaron Morris"
+    layout="fill"
+    placeholder="blur"
+    sizes="300px 600px"
+    blurDataURL={aaron.blurDataURL}
+    quality={50}
+    style={props.style}
+  />
+);
+
+export function Aaron() {
   return (
-    <div
-      onMouseLeave={() => setHover(false)}
-      className="relative w-full h-full text-gray-500"
-    >
-      <div className="absolute inset-0 w-full h-full">
-        <Image
-          src={forest.src}
-          alt="My little boy"
-          layout="fill"
-          placeholder="blur"
-          sizes="300px 600px"
-          blurDataURL={forest.blurDataURL}
-          quality={50}
-          style={{
-            objectFit: "cover",
-            objectPosition: "50% 55%",
-          }}
-        />
-      </div>
-      {inner}
-    </div>
+    <RevealTile blurDataURL={aaron.blurDataURL} Reavealed={AaronImage}>
+      <p>Aaron Morris</p>
+    </RevealTile>
+  );
+}
+
+const ForestImage = (props: { style: CSSProperties }) => (
+  <Image
+    src={forest.src}
+    alt="My son"
+    layout="fill"
+    placeholder="blur"
+    sizes="300px 600px"
+    blurDataURL={forest.blurDataURL}
+    quality={50}
+    style={props.style}
+  />
+);
+export function HusbandFather() {
+  return (
+    <RevealTile blurDataURL={forest.blurDataURL} Reavealed={ForestImage}>
+      <p>Husband &amp; Father</p>
+    </RevealTile>
   );
 }
