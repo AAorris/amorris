@@ -6,14 +6,21 @@ export async function manageSession(
   session: Session | null,
   formData: FormData
 ): Promise<Session | null> {
-  if (formData.get("action") === "clear") {
-    cookies().set("session", "", { expires: Date.now() });
+  if (formData.get("consent") !== "on") {
+    cookies().set(
+      "session",
+      JSON.stringify({
+        consent: null,
+      }),
+      { expires: Date.now() + 1000 * 60 * 60 * 24 }
+    );
     return null;
   }
   const result: Session = {
     theme:
       (formData.get("theme") as string | null) ?? session?.theme ?? "light",
     rand: session?.rand ?? "",
+    consent: formData.get("consent") === "on" ? "on" : null,
   };
   if (!result.rand) {
     const digits = 3;

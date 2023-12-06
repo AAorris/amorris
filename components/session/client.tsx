@@ -10,7 +10,7 @@ import { Label } from "@/components/ui/label";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio-group";
 import { manageSession } from "./server";
 import { Session } from "./common";
-import { Button, buttonVariants } from "../ui/button";
+import { Button } from "../ui/button";
 import { Input } from "../ui/input";
 import {
   Tooltip,
@@ -18,7 +18,6 @@ import {
   TooltipProvider,
   TooltipTrigger,
 } from "../ui/tooltip";
-import { CookieIcon, Dice6Icon } from "lucide-react";
 import { Checkbox } from "../ui/checkbox";
 
 export const SessionContext = createContext<{
@@ -53,26 +52,27 @@ export const SessionProvider = (props: {
 export function SessionForm() {
   const { session, submitSession } = useContext(SessionContext);
   const [themeValue, setThemeValue] = useState(session?.theme ?? "light");
-  const [cookieConsent, setCookieConsent] = useState(false);
+  const [cookieConsent, setCookieConsent] = useState(true);
   useEffect(() => {
     setThemeValue(session?.theme ?? "light");
   }, [session?.theme]);
+  useEffect(() => {
+    if (session?.consent !== "on") {
+      setCookieConsent(false);
+    }
+  }, [session?.consent]);
   return (
     <Popover>
       <PopoverTrigger className="h-full rounded border border-gray-900 dark:border-gray-100 px-2">
         <SessionUser />
       </PopoverTrigger>
       <PopoverContent className="p-0">
-        <div className="block h-full flex flex-col items-center justify-end font-mono">
-          <form
-            id="manage-form"
-            className="h-full w-full"
-            action={submitSession}
-          >
+        <form className="h-full w-full" action={submitSession}>
+          <div className="block h-full flex flex-col items-center justify-end font-mono">
             <section className="form-group border w-full pb-2 pt-1 px-4 flex items-center justify-between gap-2">
               <Label>Session Code</Label>
               <Input
-                className="w-[100px]"
+                className="text-right w-[7ch] text-sm py-0 h-[2em]"
                 type="text"
                 value={session?.rand || "anon"}
                 disabled
@@ -84,6 +84,7 @@ export function SessionForm() {
                 defaultValue={themeValue}
                 name="theme"
                 className="flex items-center space-x-2"
+                disabled={!cookieConsent}
               >
                 <div className="flex items-center space-x-2">
                   <RadioGroupItem value="light" id="light-theme" />
@@ -95,65 +96,46 @@ export function SessionForm() {
                 </div>
               </RadioGroup>
             </section>
-          </form>
-          <form
-            id="clear-form"
-            action={submitSession}
-            className="h-full flex-shrink w-fit"
-            onSubmit={(e) => {
-              setCookieConsent(false);
-            }}
-          >
-            <input
-              form="clear-form"
-              type="hidden"
-              name="action"
-              value="clear"
-            />
-          </form>
-          <div className="border w-full flex gap-2 px-4 py-2 justify-between">
-            <Button
-              size="sm"
-              variant="secondary"
-              type="submit"
-              form="clear-form"
-            >
-              Clear
-            </Button>
-            <div>
-              <TooltipProvider delayDuration={500}>
+            <div className="border w-full flex gap-2 px-4 py-2 justify-between">
+              <div className="flex items-center gap-1">
+                <Label htmlFor="cookie-consent">Consent</Label>
+                <Checkbox
+                  id="cookie-consent"
+                  name="consent"
+                  checked={cookieConsent}
+                  onClick={() => setCookieConsent(!cookieConsent)}
+                />
+              </div>
+              <TooltipProvider delayDuration={200}>
                 <Tooltip>
                   <TooltipTrigger className="flex items-center gap-2">
-                    <div className="flex items-center gap-1">
-                      <Label htmlFor="cookie-consent">Consent</Label>
-                      <Checkbox
-                        id="cookie-consent"
-                        name="consent"
-                        checked={cookieConsent}
-                        onClick={() => setCookieConsent(!cookieConsent)}
-                      />
-                    </div>
                     <Button
                       size="sm"
                       type="submit"
-                      form="manage-form"
-                      disabled={!cookieConsent}
+                      variant={cookieConsent ? "default" : "destructive"}
                     >
-                      <CookieIcon className="h-4 w-4 mr-1" />
                       Save
                     </Button>
                   </TooltipTrigger>
                   <TooltipContent className="max-w-[42ch]">
-                    <p>
-                      We will save some data as a cookie on this device if you
-                      click <b>Save</b>
-                    </p>
+                    {cookieConsent ? (
+                      <p>
+                        We will save some data on this device to remember your
+                        choices.
+                      </p>
+                    ) : (
+                      <p>
+                        We will opt you out of any features related to saving
+                        data on this device and clear anything you stored
+                        earlier.
+                      </p>
+                    )}
                   </TooltipContent>
                 </Tooltip>
               </TooltipProvider>
             </div>
           </div>
-        </div>
+        </form>
       </PopoverContent>
     </Popover>
   );

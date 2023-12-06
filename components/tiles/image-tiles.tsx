@@ -7,10 +7,14 @@ import Image from "next/image";
 
 export function RevealTile(props: {
   children: JSX.Element;
-  Reavealed: (props: { style: CSSProperties }) => JSX.Element;
+  Reavealed: (props: {
+    style: CSSProperties;
+    onLoadingComplete: () => void;
+  }) => JSX.Element;
   blurDataURL?: string;
 }) {
   const [click, setClick] = useState(false);
+  const [imageLoaded, setLoaded] = useState(false);
   const { hoverProps, isHovered } = useHover({});
   const inner = (
     <div
@@ -54,9 +58,9 @@ export function RevealTile(props: {
           <props.Reavealed
             style={{
               objectFit: "cover",
-              objectPosition: "50% 15%",
-              opacity: click ? 1 : 0,
+              opacity: imageLoaded || click ? 1 : 0,
             }}
+            onLoadingComplete={() => setLoaded(true)}
           />
         ) : null}
       </div>
@@ -65,7 +69,10 @@ export function RevealTile(props: {
   );
 }
 
-const AaronImage = (props: { style: CSSProperties }) => (
+const AaronImage = (props: {
+  style: CSSProperties;
+  onLoadingComplete: () => void;
+}) => (
   <Image
     src={aaron.src}
     alt="Aaron Morris"
@@ -74,7 +81,11 @@ const AaronImage = (props: { style: CSSProperties }) => (
     sizes="300px 600px"
     blurDataURL={aaron.blurDataURL}
     quality={50}
-    style={props.style}
+    style={{
+      ...props.style,
+      objectPosition: "50% 15%",
+    }}
+    onLoadingComplete={props.onLoadingComplete}
   />
 );
 
@@ -86,7 +97,10 @@ export function Aaron() {
   );
 }
 
-const ForestImage = (props: { style: CSSProperties }) => (
+const ForestImage = (props: {
+  style: CSSProperties;
+  onLoadingComplete: () => void;
+}) => (
   <Image
     src={forest.src}
     alt="My son"
@@ -95,7 +109,11 @@ const ForestImage = (props: { style: CSSProperties }) => (
     sizes="300px 600px"
     blurDataURL={forest.blurDataURL}
     quality={50}
-    style={props.style}
+    style={{
+      ...props.style,
+      objectPosition: "50% 55%",
+    }}
+    onLoadingComplete={props.onLoadingComplete}
   />
 );
 export function HusbandFather() {
